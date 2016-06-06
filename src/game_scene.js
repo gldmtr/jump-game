@@ -1,18 +1,21 @@
 import Pixi from 'pixi.js';
 
 import Player from './player';
+import Vector2 from './vector2';
 
 const renderer = Symbol();
 const stage = Symbol();
 const enabled = Symbol();
 const childs = Symbol();
 
-class Scene {
+class GameScene {
   constructor(element) {
     this[childs] = [];
     this[stage] = new Pixi.Container();
 
-    this[renderer] = Pixi.autoDetectRenderer(800, 600);
+    this[renderer] = Pixi.autoDetectRenderer(800, 600, {
+      backgroundColor: 0x821662,
+    });
 
     this.renderEnabled = false;
     if (element) {
@@ -21,10 +24,13 @@ class Scene {
   }
 
   load() {
-    console.log(this[renderer])
     const player = new Player();
 
     this.add(player);
+  }
+
+  update(delta) {
+    this[childs].forEach(child => child.update(delta));
   }
 
   add(model) {
@@ -44,7 +50,10 @@ class Scene {
   }
 
   get view() {
-    return this.renderer.view;
+    return this[renderer].view;
+  }
+  get dimensions() {
+    return new Vector2(this[renderer].width, this[renderer].height);
   }
   set renderEnabled(value) {
     if (value && !this[enabled]) {
@@ -54,4 +63,4 @@ class Scene {
   }
 }
 
-export default new Scene();
+export default GameScene;
