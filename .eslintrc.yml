@@ -1,0 +1,4 @@
+extends: airbnb/base
+installedESLint: true
+rules:
+  import/no-unresolved: [0]
