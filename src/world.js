@@ -1,3 +1,5 @@
+import config from './config';
+
 const scenes = Symbol();
 const currentScene = Symbol();
 const interval = Symbol();
@@ -9,8 +11,8 @@ class World {
     this[scenes] = [];
 
     const {
-      gravity: gravity = 0.1,
-      refreshRate: refreshRate = 30,
+      gravity: gravity = config.gravity,
+      refreshRate: refreshRate = config.refreshRate,
     } = options || {};
 
     this.gravity = gravity;

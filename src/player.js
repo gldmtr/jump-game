@@ -1,9 +1,11 @@
 import World from './world';
 import Vector2 from './vector2';
+import config from './config';
 import { loadSprite, relativeToAbsolute } from './helper';
 
 const position = Symbol();
 const anchor = Symbol();
+const speed = Symbol();
 const sprite = Symbol();
 
 class Player {
@@ -12,19 +14,41 @@ class Player {
 
     this.anchor = new Vector2(0.5, 0.5);
     this.position = new Vector2(0.5, 0.5);
-    this.speed = new Vector2();
-    this.acceleration = new Vector2();
+    this[speed] = new Vector2();
   }
 
   update(delta) {
     if (!delta) {
       return;
     }
+
+    const divider = delta / 1000;
+
+    if (Math.abs(this[speed].x) < config.speedFadeout) {
+      this[speed].x = 0;
+    } else {
+      this[speed].x -= Math.sign(this[speed].x) * config.speedFadeout * divider;
+    }
+    this[speed].y -= World.gravity * divider;
+
     const newPosition = new Vector2(
-      this.position.x,
-      this.position.y - World.gravity * (delta / 1000)
+      this.position.x + this[speed].x * divider,
+      this.position.y + this[speed].y * divider
     );
     this.position = newPosition;
+    // console.log(this.position);
+  }
+
+  jump() {
+    this[speed].y = config.jumpSpeed;
+  }
+
+  moveLeft() {
+    this.speed.x -= config.moveSpeed;
+  }
+
+  moveRight() {
+    this.speed.x += config.moveSpeed;
   }
 
   get position() {
@@ -49,6 +73,16 @@ class Player {
     }
     this[anchor] = vector2;
   }
+
+  get speed() {
+    return this[speed];
+  }
+  // set speed(vector2) {
+  //   //
+  //   // TODO: Check collision with platform before set speed
+  //   //
+  //   this[speed] = vector2;
+  // }
 
   get viewModel() {
     return this[sprite];

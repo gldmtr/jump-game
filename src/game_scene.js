@@ -1,6 +1,7 @@
 import Pixi from 'pixi.js';
 
 import Player from './player';
+import PlayerController from './player_controller';
 import Vector2 from './vector2';
 
 const renderer = Symbol();
@@ -25,6 +26,8 @@ class GameScene {
 
   load() {
     const player = new Player();
+    // Bad idea
+    player.controller = new PlayerController(player, this.view);
 
     this.add(player);
   }
