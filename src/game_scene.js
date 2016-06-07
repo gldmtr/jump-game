@@ -1,13 +1,17 @@
+import _ from 'lodash';
 import Pixi from 'pixi.js';
 
 import Player from './player';
+import Platform from './platform';
 import PlayerController from './player_controller';
 import Vector2 from './vector2';
+import CollisionManager from './collision_manager';
 
 const renderer = Symbol();
 const stage = Symbol();
 const enabled = Symbol();
 const childs = Symbol();
+const collider = Symbol();
 
 class GameScene {
   constructor(element) {
@@ -22,6 +26,8 @@ class GameScene {
     if (element) {
       this.append(element);
     }
+
+    this[collider] = new CollisionManager(this[childs]);
   }
 
   load() {
@@ -30,10 +36,26 @@ class GameScene {
     player.controller = new PlayerController(player, this.view);
 
     this.add(player);
+
+    for (let i = 0; i < 10; i++) {
+      const platform = new Platform();
+      const x = Math.random();
+      const y = Math.random();
+      platform.position = new Vector2(x, y);
+
+      this.add(platform);
+    }
   }
 
   update(delta) {
     this[childs].forEach(child => child.update(delta));
+    const playerCollisions = _(this[collider].update())
+      .filter(coll => coll.from instanceof Player)
+      .first();
+
+    if (playerCollisions) {
+      playerCollisions.from.collide(playerCollisions.to);
+    }
   }
 
   add(model) {

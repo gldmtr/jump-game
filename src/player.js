@@ -1,7 +1,15 @@
+import _ from 'lodash';
+
 import World from './world';
 import Vector2 from './vector2';
 import config from './config';
-import { loadSprite, relativeToAbsolute } from './helper';
+import {
+  loadSprite,
+  relativeToAbsolute,
+  relativeToScene,
+  absoluteToRelative,
+  sceneToRelative,
+} from './helper';
 
 const position = Symbol();
 const anchor = Symbol();
@@ -10,7 +18,8 @@ const sprite = Symbol();
 
 class Player {
   constructor() {
-    this[sprite] = loadSprite('assets/textures/bunny.png');
+    this[sprite] = loadSprite('assets/textures/bunny.png',
+      relativeToAbsolute(new Vector2(0.15, 0.225)));
 
     this.anchor = new Vector2(0.5, 0.5);
     this.position = new Vector2(0.5, 0.5);
@@ -51,12 +60,34 @@ class Player {
     this.speed.x += config.moveSpeed;
   }
 
+  collide(to) {
+    const thisBounds = this.bounds;
+    const stayOn = _(to).filter(collider => {
+      const colliderBounds = collider.bounds;
+      const absoluteDelta = (thisBounds.y + thisBounds.height - colliderBounds.y);
+      const relativeDelta = absoluteToRelative(new Vector2(0, absoluteDelta));
+      return relativeDelta.y <= config.collisionApproximation;
+    }).first();
+
+    if (!stayOn) {
+      return;
+    }
+
+    const newPosition = new Vector2(
+      thisBounds.x + thisBounds.width / 2,
+      stayOn.bounds.y - thisBounds.height / 2
+    );
+    const newRelativePosition = sceneToRelative(newPosition);
+    this.position = newRelativePosition;
+    this[speed].y = 0;
+  }
+
   get position() {
     return this[position];
   }
   set position(vector2) {
     if (this[sprite]) {
-      const { x, y } = relativeToAbsolute(vector2);
+      const { x, y } = relativeToScene(vector2);
       this[sprite].position.x = x;
       this[sprite].position.y = y;
     }
@@ -86,6 +117,9 @@ class Player {
 
   get viewModel() {
     return this[sprite];
+  }
+  get bounds() {
+    return this[sprite].getBounds();
   }
 }
 
