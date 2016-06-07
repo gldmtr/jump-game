@@ -54,7 +54,7 @@ class GameScene {
       .first();
 
     if (playerCollisions) {
-      playerCollisions.from.collide(playerCollisions.to);
+      playerCollisions.from.collide(playerCollisions.to, delta);
     }
   }
 

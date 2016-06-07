@@ -60,13 +60,21 @@ class Player {
     this.speed.x += config.moveSpeed;
   }
 
-  collide(to) {
+  collide(to, delta = 1000 / config.refreshRate) {
+    if (this[speed].y > 0) {
+      return;
+    }
+
+    const divider = 1000 / delta;
+
     const thisBounds = this.bounds;
     const stayOn = _(to).filter(collider => {
       const colliderBounds = collider.bounds;
       const absoluteDelta = (thisBounds.y + thisBounds.height - colliderBounds.y);
       const relativeDelta = absoluteToRelative(new Vector2(0, absoluteDelta));
-      return relativeDelta.y <= config.collisionApproximation;
+      const epsilon = Math.max(Math.abs(this[speed].y) / divider, config.collisionApproximation);
+
+      return relativeDelta.y <= epsilon;
     }).first();
 
     if (!stayOn) {

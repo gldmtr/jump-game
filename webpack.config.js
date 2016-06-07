@@ -45,7 +45,6 @@ module.exports = {
       { from: 'src/index.html' },
       { from: 'assets/textures', to: 'assets/textures' },
     ]),
-    new webpack.optimize.UglifyJsPlugin(),
   ],
   stats: {
     colors: true,
