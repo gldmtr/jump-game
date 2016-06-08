@@ -18,7 +18,7 @@ const sprite = Symbol();
 
 class Player {
   constructor() {
-    this[sprite] = loadSprite('assets/textures/bunny.png',
+    this[sprite] = loadSprite('assets/textures/omnom.png',
       relativeToAbsolute(new Vector2(0.15, 0.225)));
 
     this.anchor = new Vector2(0.5, 0.5);

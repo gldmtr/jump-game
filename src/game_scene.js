@@ -27,6 +27,11 @@ class GameScene {
       this.append(element);
     }
 
+    const background = Pixi.Sprite.fromImage('assets/textures/background.jpg');
+    background.position.x = 0;
+    background.position.y = 0;
+    this[stage].addChild(background);
+
     this[collider] = new CollisionManager(this[childs]);
   }
 
